@@ -3,7 +3,7 @@
 #include "Button.h"
 #include <atomic>
 
-//typedef void (Button::* CallbackType)(SDL_Event* e);
+// typedef void (Button::* CallbackType)(SDL_Event* e);
 // typedef std::function<void (const GameCharacter&)> HealthCalcFunc;
 
 //Button constants
@@ -16,7 +16,7 @@ class Image : public Button{
 private:
 	//Check if mouse is in button
 	//Top left position 
-	SDL_Point iPosition;
+	SDL_Point iPosition{};
 
 	//Currently used global sprite
 	//LButtonSprite imCurrentSprite;

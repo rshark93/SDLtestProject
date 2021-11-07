@@ -31,7 +31,9 @@ private:
     //std::thread buttonThread;
 
 	std::atomic_bool quit = false;
-    std::shared_ptr<std::thread> buttonThread = nullptr;
+	std::shared_ptr<std::thread> buttonThread = nullptr;
+
+	bool click_flag = true;
     //std::shared_ptr<std::thread> imageThread = nullptr;
 public:
 
@@ -40,7 +42,7 @@ public:
 
 	bool init();
 
-	bool loadMedia();
+	bool loadMedia() const;
 
 	void close();
 

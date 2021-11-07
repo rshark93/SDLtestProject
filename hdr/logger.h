@@ -91,7 +91,7 @@ bool set_logger(int32_t warn_level, log_s input_function) {
 			return true;
 		}
 	}
-	catch (const std::exception e){
+	catch (const std::exception e) {
 		// do nothing :( 
 	}
 	return false;

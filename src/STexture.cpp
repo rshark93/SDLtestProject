@@ -10,7 +10,7 @@ STexture::~STexture() {
 	free();
 }
 
-bool STexture::loadFromFile(std::string path, SDL_Renderer* gRenderer) {
+bool STexture::load_from_file(const std::string path, SDL_Renderer* gRenderer) {
 	//Get rid of preexisting texture
 	free();
 
@@ -19,26 +19,22 @@ bool STexture::loadFromFile(std::string path, SDL_Renderer* gRenderer) {
 
 	//Load image at specified path
 	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
-	if (loadedSurface == nullptr)
-		std::cout << "Unable to load image %s! SDL_image Error: " << path << std::endl;
-	else {
+	if (loadedSurface != nullptr) {
 		//Color key image
 		SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
 
 		//Create texture from surface pixels
 		newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
-		if (newTexture == nullptr)
-			std::cout << "Unable to create texture from: " << path.c_str() <<
-				"SDL Error: " << SDL_GetError() << std::endl;
-		else {
+		if (newTexture != nullptr) {
 			//Get image dimensions
-			mWidth = loadedSurface->w;
-			mHeight = loadedSurface->h;
-		}
+			m_width_ = loadedSurface->w;
+			m_height_ = loadedSurface->h;
+		} else std::cout << "Unable to create texture from: " << path.c_str() <<
+			"SDL Error: " << SDL_GetError() << std::endl;
 
 		//Get rid of old loaded surface
 		SDL_FreeSurface(loadedSurface);
-	}
+	} else std::cout << "Unable to load image %s! SDL_image Error: " << path << std::endl;
 
 	//Return success
 	sdlTexture = newTexture;
@@ -50,30 +46,31 @@ void STexture::free() {
 	if (sdlTexture != nullptr) {
 		SDL_DestroyTexture(sdlTexture);
 		sdlTexture = nullptr;
-		mWidth = 0;
-		mHeight = 0;
 	}
+
+	m_width_ = 0;
+	m_height_ = 0;
 }
 
-void STexture::setColor(Uint8 red, Uint8 green, Uint8 blue) {
+void STexture::set_color(const Uint8 red, const Uint8 green, const Uint8 blue) const {
 	//Modulate texture rgb
 	SDL_SetTextureColorMod(sdlTexture, red, green, blue);
 }
 
-void STexture::setBlendMode(SDL_BlendMode blending) {
+void STexture::set_blend_mode(SDL_BlendMode blending) const {
 	//Set blending function
 	SDL_SetTextureBlendMode(sdlTexture, blending);
 }
 
-void STexture::setAlpha(Uint8 alpha) {
+void STexture::set_alpha(Uint8 alpha) const {
 	//Modulate texture alpha
 	SDL_SetTextureAlphaMod(sdlTexture, alpha);
 }
 
 void STexture::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip,
-	SDL_Renderer* gRenderer) {
+	SDL_Renderer* gRenderer) const {
 	//Set rendering space and render to screen
-	SDL_Rect renderQuad = { x, y, mWidth, mHeight };
+	SDL_Rect renderQuad = { x, y, m_width_, m_height_ };
 
 	//Set clip rendering dimensions
 	if (clip != nullptr) {
@@ -85,10 +82,10 @@ void STexture::render(int x, int y, SDL_Rect* clip, double angle, SDL_Point* cen
 	SDL_RenderCopyEx(gRenderer, sdlTexture, clip, &renderQuad, angle, center, flip);
 }
 
-int STexture::getWidth() {
-	return mWidth;
+int STexture::get_width() const {
+	return m_width_;
 }
 
-int STexture::getHeight() {
-	return mHeight;
+int STexture::get_height() const {
+	return m_height_;
 }

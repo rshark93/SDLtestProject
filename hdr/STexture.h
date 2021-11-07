@@ -10,39 +10,39 @@ private:
 	///std::shared_ptr<SDL_Texture*> sdlTexture = std::make_shared<SDL_Texture*>();
 	SDL_Texture* sdlTexture = nullptr;
 	//Image dimensions
-	int mWidth = 0;
-	int mHeight = 0;
+	int m_width_ = 0;
+	int m_height_ = 0;
 public:
 	//Initializes variables
 	STexture();
 
-	//Deallocates memory
+	//Deallocate memory
 	~STexture();
 
 	//Loads image at specified path
-	bool loadFromFile(std::string path, SDL_Renderer* gRenderer);
+	bool load_from_file(std::string path, SDL_Renderer* gRenderer);
 
 	//Creates image from font string
 	//bool loadFromRenderedText(std::string textureText, SDL_Color textColor);
 
-	//Deallocates texture
+	//Deallocate texture
 	void free();
 
 	//Set color modulation
-	void setColor(Uint8 red, Uint8 green, Uint8 blue);
+	void set_color(Uint8 red, Uint8 green, Uint8 blue) const;
 
 	//Set blending
-	void setBlendMode(SDL_BlendMode blending);
+	void set_blend_mode(SDL_BlendMode blending) const;
 
 	//Set alpha modulation
-	void setAlpha(Uint8 alpha);
+	void set_alpha(Uint8 alpha) const;
 
 	//Renders texture at given point
 	void render(int x, int y, SDL_Rect* clip, double , SDL_Point* center, SDL_RendererFlip flip,
-		SDL_Renderer* gRenderer);
+		SDL_Renderer* gRenderer) const;
 
 	//Gets image dimensions
-	int getWidth();
-	int getHeight();
+	[[nodiscard]] int get_width() const;
+	[[nodiscard]] int get_height() const;
 
 };

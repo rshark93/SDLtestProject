@@ -17,10 +17,7 @@ bool MCore::init() {
 
         //Create window
         gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-        if (gWindow == nullptr) {
-            std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
-            success = false;
-        } else {
+        if (gWindow != nullptr) {
             //Create vsynced renderer for window
             gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
             if (gRenderer == nullptr) {
@@ -31,27 +28,31 @@ bool MCore::init() {
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
                 //Initialize PNG loading
-                auto imgFlags = IMG_INIT_PNG;
-                if (!(IMG_Init(imgFlags) & imgFlags)) {
+                auto img_flags = IMG_INIT_PNG;
+                if (!(IMG_Init(img_flags) & img_flags)) {
                     std::cout << "SDL_image could not initialize! SDL_image Error: " << IMG_GetError() << std::endl;
                     success = false;
                 }
             }
+        }
+        else {
+            std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
+            success = false;
         }
     }
 
     return success;
 }
 
-bool MCore::loadMedia()
+bool MCore::loadMedia() const
 {
     //Loading success flag
     bool success = true;
 
     //Load sprites
-    if (!sTexture->loadFromFile(button_img_path, gRenderer) &&
-        !sTexture->loadFromFile(image_path, gRenderer)) {
-        printf("Failed to load button or image sprite texture!\n");
+    if (!sTexture->load_from_file(button_img_path, gRenderer) &&
+        !sTexture->load_from_file(image_path, gRenderer)) {
+        std::cout << "Failed to load button or image sprite texture!" << std::endl;
         success = false;
     } else {
         //Set sprites
@@ -108,13 +109,14 @@ MCore::~MCore() {
 int MCore::run() {
 
     //buttonThread = std::shared_ptr<std::thread>(new std::thread( [this] { buttonRun(); }));
+    //buttonRun();
     
     if (!init())
-        printf("Failed to initialize!\n");
+        std::cout << "Failed to initialize!" << std::endl;
     else {
         //Load media
         if (!loadMedia())
-            printf("Failed to load media!\n");
+            std::cout << "Failed to load media!" << std::endl;
         else {
             buttonRun();
             //buttonThread = std::thread(&MCore::buttonRun, this);
@@ -124,8 +126,6 @@ int MCore::run() {
 
     //SDL_Thread* threadID = SDL_CreateThread(buttonRun, "LazyThread", (void*)data);
 
-    //buttonRun();
-
     if (buttonThread->joinable())
         buttonThread->join();
    
@@ -133,16 +133,6 @@ int MCore::run() {
 }
 
 void MCore::buttonRun() {
-    //if (!init())
-    //    printf("Failed to initialize!\n");
-    //else {
-    //    //Load media
-    //    if (!loadMedia())
-    //        printf("Failed to load media!\n");
-    //    else {
-            //Main loop flag
-            
-
             //Event handler
             SDL_Event e;
             SDL_Event ei;
@@ -150,14 +140,14 @@ void MCore::buttonRun() {
             //While application is running
             while (!quit) {
                 //Handle events on queue
-                while (/*SDL_PollEvent(&e) != 0 &&*/ SDL_PollEvent(&ei) != 0) {
+                while (SDL_PollEvent(&e) != 0 || SDL_PollEvent(&ei) != 0) {
                     //User requests quit
                     if (e.type == SDL_QUIT || ei.type == SDL_QUIT)
                         quit = true;
 
                     // Handle button & image events
                     //if (SDL_PollEvent(&e) != 0)
-                    //    gButtons->handleEvent(&e);
+                    gButtons->handleEvent(&e);
                     //if (SDL_PollEvent(&ei) != 0)
                     gImages->ihandleEvent(&ei);
                 }
@@ -167,25 +157,30 @@ void MCore::buttonRun() {
                 SDL_RenderClear(gRenderer);
 
                 //Render buttons
-                sTexture->loadFromFile(button_img_path, gRenderer);
+                sTexture->load_from_file(button_img_path, gRenderer);
                 gButtons->render(gRenderer, *sTexture);
-
 
                 std::cout << "ei.type: " << ei.type << std::endl;
                 std::cout << "gImages->imCurrentSprite: " << gImages->imCurrentSprite << std::endl;
+                std::cout << "gButtons->gSpriteClips: " << gButtons->mCurrentSprite << std::endl;
                 //Render images
-                if (gImages->imCurrentSprite) /*|| ei.type == SDL_MOUSEBUTTONDOWN || ei.type == SDL_MOUSEBUTTONUP*/
-                    sTexture->loadFromFile(image_path_2, gRenderer);
+                if (gImages->imCurrentSprite)
+                    sTexture->load_from_file(image_path_2, gRenderer);
                 else
-                    sTexture->loadFromFile(image_path, gRenderer);
+                    sTexture->load_from_file(image_path, gRenderer);
                 gImages->render(gRenderer, *sTexture);
 
-                //Update screen
+                if (gButtons->mCurrentSprite && e.type == SDL_MOUSEBUTTONDOWN) {
+                    if (click_flag) {
+                        click_flag = false;
+                        run();
+                    } else {
+                        click_flag = true;
+                        close();
+                    }
+                }
 
+                //Update screen
                 SDL_RenderPresent(gRenderer);
-                //std::this_thread::sleep_for(std::chrono::microseconds(10));
-            //}
-        //}
     }
-    //return 0;
 }
