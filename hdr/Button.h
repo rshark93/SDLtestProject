@@ -19,14 +19,14 @@ enum LButtonSprite {
 class Button/* : public Widget */{
 private:
 	//Top left position
-	SDL_Point mPosition;
-
-	//Currently used global sprite
-	LButtonSprite mCurrentSprite;
+	SDL_Point mPosition{};
 
 	SDL_Point *center = new SDL_Point{ 0, 0 };
 public:
-	SDL_Rect gSpriteClips[BUTTON_SPRITE_TOTAL];
+	SDL_Rect gSpriteClips[BUTTON_SPRITE_TOTAL]{};
+
+	//Currently used global sprite
+	LButtonSprite mCurrentSprite;
 
 	Button();
 	~Button();

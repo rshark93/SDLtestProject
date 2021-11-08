@@ -7,18 +7,8 @@ void write_log(int l, const char* msg) {
 }
 
 int main() {
-
-    auto runGame = new MCore();
-    auto status = runGame->run();
-    delete runGame;
-
-    //WidgetContainer *wdgC = new WidgetContainer();
-    //Image *img = new Image();
-    //Button* button = new Button();
-
-    //delete button;
-    //delete img;
-    //delete wdgC;
+    auto run_game = std::make_shared<MCore>();
+    const auto status = run_game->run();
 
     return status;
 }

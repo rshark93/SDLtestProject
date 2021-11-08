@@ -28,23 +28,16 @@ void Image::ihandleEvent(SDL_Event* ei) {
         int x, y;
         SDL_GetMouseState(&x, &y);
 
-        auto inside = true;
-
         //Mouse is left of the button
-        if (x < iPosition.x)
-            inside = false;
+        auto inside = x < iPosition.x ?  false :
         //Mouse is right of the button
-        else if (x > iPosition.x + IMAGE_WIDTH)
-            inside = false;
+        x > iPosition.x + IMAGE_WIDTH ? false :
         //Mouse above the button
-        else if (y < iPosition.y)
-            inside = false;
+        y < iPosition.y ? false :
         //Mouse below the button
-        else if (y > iPosition.y + IMAGE_HEIGHT)
-            inside = false;
+        y > iPosition.y + IMAGE_HEIGHT ? false : true;
 
-        std::string ain = inside ? "true" : "false";
-        std::cout << "inside: " << ain << std::endl;
+        std::cout << "inside: " << (inside ? "true" : "false") << std::endl;
         //Mouse is outside button
         if (!inside)
             imCurrentSprite = BUTTON_SPRITE_MOUSE_OUT;
